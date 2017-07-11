@@ -1,37 +1,33 @@
-var handler = require('./')
-var http = require('http')
+var env = process.env
 var os = require('os')
 var path = require('path')
-var pino = require('pino')
-var uuid = require('uuid')
+var pino = require('express-pino-logger')
 
-var configuration = {
-  directory: process.env.DIRECTORY
-    ? process.env.DIRECTORY
-    : path.join(process.cwd(), 'tinybb'),
-  port: process.env.PORT
-    ? parseInt(process.env.PORT)
-    : 8080,
-  domain: process.env.DOMAIN
-    ? process.env.DOMAIN
-    : os.hostname()
-}
+var PORT = process.env.PORT
+  ? parseInt(process.env.PORT)
+  : 8080
 
-var log = configuration.log = pino({server: uuid.v4()})
+var log = require('./logger').logger
 
-var server = http.createServer()
-  .on('response', function (request, response) {
-    handler(configuration, request, response)
-  })
+var app = require('./')
 
-server.listen(configuration.port, function () {
-  configuration.port = this.address().port
-  log.info({port: configuration.port}, 'listening')
+app.disable('x-powered-by')
+
+app.set(
+  'directory',
+   env.DIRECTORY ? env.DIRECTORY : path.join(process.cwd(), 'tinybb')
+)
+
+app.set('site', env.DOMAIN ? env.DOMAIN : os.hostname())
+
+var server = app.listen(PORT, function () {
+  log.info({port: server.address().port}, 'listening')
 })
 
 process.on('SIGINT', close)
 process.on('SIGQUIT', close)
 process.on('SIGTERM', close)
+
 process.on('uncaughtException', function (exception) {
   log.error(exception)
   close()
