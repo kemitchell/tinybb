@@ -1,0 +1,20 @@
+{
+  "name": "tinybb",
+  "description": "a teeny-tiny bulletin board server",
+  "version": "0.0.0",
+  "author": "Kyle E. Mitchell <kyle@kemitchell.com> (https://kemitchell.com/)",
+  "dependencies": {
+    "pino": "^4.6.0",
+    "uuid": "^3.1.0"
+  },
+  "devDependencies": {
+    "istanbul": "^0.4.5",
+    "rimraf": "^2.6.1",
+    "tape": "^4.7.0"
+  },
+  "license": "MIT",
+  "repository": "kemitchell/tinybb.js",
+  "scripts": {
+    "test": "NODE_ENV=test tape test/**.test.js"
+  }
+}
